@@ -67,7 +67,7 @@ class Construct:
         # Create index file
         if "PORE" in self._struct:
             file_out.write("# Create Index\n")
-            out_string = "gmx_mpi make_ndx "
+            out_string = "gmx make_ndx "
             out_string += "-f "+folder_gro+file_box+" "
             out_string += "-o "+folder_gro+file_ndx
             out_string += " >> logging.log 2>&1 <<EOF\n"
@@ -262,12 +262,10 @@ class Construct:
             file_out.write("#"*(12+len(self._box_link))+"\n")
             file_out.write("# Process "+self._box_link+" #\n")
             file_out.write("#"*(12+len(self._box_link))+"\n")
-            file_out.write("echo \"Load gromacs ...\"; exit;\n")
-            if "fill" in [self._mols[mol][0] for mol in self._mols]:
-                file_out.write("echo \"Set ions names in sort script if necessary ...\"; exit;\n")
+            file_out.write("module load chem/gromacs/2024.4\n\n")
             
             # First lines for standard gromacs command
-            gmx_standard =  "gmx_mpi insert-molecules " + "-f "+folder_gro+file_box+" " +  "-o "+folder_gro+file_box+" "
+            gmx_standard =  "gmx insert-molecules " + "-f "+folder_gro+file_box+" " +  "-o "+folder_gro+file_box+" "
             
             # Loop over the molecules which you want to insert into the system
             for mol in self._mols:
@@ -416,12 +414,7 @@ class Construct:
         # Open file
         with open(self._box_path+"_fill/fill.sh", "w") as file_out:
             # Check if backup folder is given
-            file_out.write("# Create Todos\n")
-            file_out.write("echo \"Load gromacs ...\"; exit;\n")
-            if not all(x is None for x in [self._mols[mol][2] for mol in self._mols]):
-                file_out.write("echo \"Load gromacs in Backup...\"; exit;\n")
-            file_out.write("echo \"Set ions names in sort script if necessary ...\"; exit;\n")
-            file_out.write("\n")
+            file_out.write("module load chem/gromacs/2024.4\n\n")
 
             # Add folder number
             file_out.write("# Set folder number\n")
@@ -459,7 +452,7 @@ class Construct:
             for mol in self._mols:
                 if self._mols[mol][0]=="fill" and self._mols[mol][5]:
                     for area,i in zip(self._mols[mol][5], range(len(self._mols[mol][5]))):
-                        out_string = "gmx_mpi insert-molecules "
+                        out_string = "gmx insert-molecules "
                         out_string += "-f "+folder_gro+file_box+" "
                         out_string += "-o "+folder_gro+file_box+" "
                         out_string += "-ci "+folder_gro+self._struct[mol].split("/")[-1]+" "
@@ -472,7 +465,7 @@ class Construct:
                         out_string += " >> logging.log 2>&1\n" 
                         file_out.write(out_string)
                 elif self._mols[mol][0]=="fill" and not self._mols[mol][5]:
-                    out_string = "gmx_mpi insert-molecules "
+                    out_string = "gmx insert-molecules "
                     out_string += "-f "+folder_gro+file_box+" "
                     out_string += "-o "+folder_gro+file_box+" "
                     out_string += "-ci "+folder_gro+self._struct[mol].split("/")[-1]+" "

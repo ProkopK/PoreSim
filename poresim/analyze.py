@@ -51,20 +51,18 @@ class Analyze:
         utils.mkdirp(self._box_path+"ana")
         with open(self._box_path+"ana/ana.sh", "w") as file_out:
             # Check if backup folder is given
-            file_out.write("# Set Todos\n")
-            file_out.write("echo \"Load gromacs ...\"; exit;\n")
-            file_out.write("echo \"Set MOLECULEINDEX ...\"; exit;\n")
-            file_out.write("\n")
+            file_out.write("module load chem/gromacs/2024.4\n\n")
 
             # Extract molecule
             file_out.write("# Extract molecules from trajectory\n")
             file_out.write("declare -A mols\n\n")
 
+            file_out.write("echo \"Set MOLECULEINDEX ...\"; exit;\n")
             file_out.write("mols[]=""\n\n")
 
             file_out.write("for key in \"${!mols[@]}\"; do\n")
 
-            out_string = "gmx_mpi trjconv "
+            out_string = "gmx trjconv "
             out_string += "-f "+folder_step+file_trr+" "
             out_string += "-s "+folder_step+file_tpr+" "
             out_string += "-o traj_${mols[$key]}.xtc "
@@ -77,8 +75,4 @@ class Analyze:
             file_out.write("done\n\n")
 
 
-            file_out.write("echo \"System "+self._box_link+ " - Finished Extraction ...\"\n\n")
-
-            file_out.write(self._cluster["queuing"]["submit"] + " ana.job")
-
-            
+            file_out.write("echo \"System "+self._box_link+ " - Finished Extraction ...\"\n")

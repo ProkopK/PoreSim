@@ -104,7 +104,7 @@ class Actuate:
 
                 # Grompp
                 gro_string = ""
-                gro_string += "gmx_mpi grompp "
+                gro_string += "gmx grompp "
                 gro_string += "-f "+folder_mdp+sim_all[step]+".mdp "
                 gro_string += "-c "+conf[step]+" "
                 gro_string += check[step]
@@ -116,9 +116,7 @@ class Actuate:
                 gro_string += "\n"
 
                 # Mdrun
-                gro_string += self._cluster["queuing"]["mpi"]+" "
-                gro_string += str(int(np[step])*int(nodes[step]))+" " if self._cluster["queuing"]["add_np"] else ""
-                gro_string += "gmx_mpi mdrun "
+                gro_string += "gmx mdrun "
                 gro_string += "-s "+sim_all[step]+".tpr "
                 gro_string += "-ntomp "+ntomp[step]+" " if not ntomp[step]=="0" else ""
                 gro_string += "-plumed ../_gro/plumed.dat " if self._is_plm else ""
@@ -202,7 +200,7 @@ class Actuate:
             # Grompp
             gro_string = ""
             if is_first:
-                gro_string += "gmx_mpi grompp "
+                gro_string += "gmx grompp "
                 gro_string += "-f "+folder_mdp+sim_run+".mdp "
                 gro_string += "-c "+last+".gro "
                 gro_string += "-t "+last+".cpt "
@@ -214,9 +212,7 @@ class Actuate:
                 gro_string += "\n"
 
             # Mdrun
-            gro_string += self._cluster["queuing"]["mpi"]+" "
-            gro_string += str(int(np)*int(nodes))+" " if self._cluster["queuing"]["add_np"] else ""
-            gro_string += "gmx_mpi mdrun "
+            gro_string += "gmx mdrun "
             gro_string += "-s "+sim_run+".tpr "
             gro_string += "-ntomp "+ntomp+" " if not ntomp=="0" else ""
             gro_string += "-plumed ../_gro/plumed.dat " if self._is_plm else ""
@@ -281,7 +277,7 @@ class Actuate:
         utils.replace(link_shell, "COMMANDCHANGEDIR", "cd "+self._clr_link+str("ana"))
 
         # Insert into file
-        utils.replace(link_shell, "COMMANDGROMACS", "python ana.py")
+        utils.replace(link_shell, "COMMANDGROMACS", "sh ana.sh\n\nsource /home/st/st_st/st_st184141/lammps/.venv/bin/activate\npython ana.py")
 
     ##################
     # Public Methods #
